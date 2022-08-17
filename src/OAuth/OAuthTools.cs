@@ -386,6 +386,27 @@ namespace OAuth
                 case OAuthSignatureMethod.RsaSha1:
                     signature = TextSigner.SignWithRsaSha1(signatureBase, consumerSecret);
                     break;
+                case OAuthSignatureMethod.HmacSha256:
+                {
+                    consumerSecret = UrlEncodeRelaxed(consumerSecret);
+                    tokenSecret = UrlEncodeRelaxed(tokenSecret);
+                    var key = string.Concat(consumerSecret, "&", tokenSecret);
+#if WINRT
+                        IBuffer keyMaterial = CryptographicBuffer.ConvertStringToBinary(key, _encoding);
+                        MacAlgorithmProvider hmacSha1Provider = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
+                        CryptographicKey macKey = hmacSha1Provider.CreateKey(keyMaterial);
+                        IBuffer dataToBeSigned = CryptographicBuffer.ConvertStringToBinary(signatureBase, _encoding);
+                        IBuffer signatureBuffer = CryptographicEngine.Sign(macKey, dataToBeSigned);
+                        signature = CryptographicBuffer.EncodeToBase64String(signatureBuffer);
+#else
+                    var crypto = new HMACSHA256();
+
+                    crypto.Key = _encoding.GetBytes(key);
+                    signature = HashWith(signatureBase, crypto);
+#endif
+
+                    break;
+                }
                 default:
                     throw new NotImplementedException("Only HMAC-SHA1 and RSA-SHA1 signatures are currently supported.");
             }

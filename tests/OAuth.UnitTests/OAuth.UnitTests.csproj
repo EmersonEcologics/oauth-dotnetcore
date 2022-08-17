@@ -4,9 +4,17 @@
 
         <IsPackable>false</IsPackable>
 
-        <TargetFrameworks>net40;netcoreapp2.2</TargetFrameworks>
-
         <RootNamespace>OAuth.Tests</RootNamespace>
+
+        <TargetFramework>netstandard2.1</TargetFramework>
+
+        <OutputType>Library</OutputType>
+
+        <LangVersion>7.3</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
