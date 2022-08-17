@@ -511,9 +511,11 @@ namespace OAuth
         public static string ToRequestValue(OAuthSignatureMethod signatureMethod)
         {
             var value = signatureMethod.ToString().ToUpper();
-            var shaIndex = value.IndexOf("SHA1");
+            var shaIndex = value.IndexOf("SHA1",StringComparison.CurrentCulture);
+            if (shaIndex == -1) shaIndex = value.IndexOf("SHA256",StringComparison.CurrentCulture);
             return shaIndex > -1 ? value.Insert(shaIndex, "-") : value;
         }
+
 
         private static bool IsNullOrBlank(string value)
         {
